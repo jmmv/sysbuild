@@ -1,0 +1,97 @@
+Changes in version 2.7
+======================
+
+STILL UNDER DEVELOPMENT; NOT RELEASED YET.
+
+* Sources migrated to a GitHub project from the previous copy in
+  the pkgsrc repository.  sysbuild is now a first-class package and
+  includes a traditional build system based on automake and autoconf.
+
+
+Changes in version 2.6
+======================
+
+Released on 2013-06-18.
+
+* Fixed the default configuration file to populate CVSTAG correctly when
+  using a CVS/Tag file.
+
+* Ensured that errors from CVS stop execution.
+
+
+Changes in version 2.5
+======================
+
+Released on 2013-03-08.
+
+* Added support for pre/post fetch/build hooks so that, for example,
+  rsync can be used to push the results of a successful build to a
+  remote server.
+
+
+Changes in version 2.4
+======================
+
+Released on 2012-10-13.
+
+* Added a MKVARS variable to pass arbitrary variables to build.sh through
+  -V.  E.g. MKVARS="MKDEBUG=yes".
+
+* Moved the documentation of the configuration file to a new
+  sysbuild.conf(5).
+
+
+Changes in version 2.3
+======================
+
+Released on 2012-08-25.
+
+* Added the 'env' command.  This prints a small shell snippet that can
+  be imported into the current shell.  The printed code defines a set of
+  convenience global variables and functions to work with the source
+  tree.
+
+
+Changes in version 2.2
+======================
+
+Released on 2012-08-22.
+
+* Added support to specify per-machine targets by prefixing the targets
+  in BUILD_TARGETS by the machine they correspond to.  Useful, for
+  example, to build different kernels depending on the machine type.
+
+
+Changes in version 2.1
+======================
+
+Released on 2012-08-15.
+
+* Switched to use shtk for the common utilities and configuration file
+  parsing functionality.  The local copies of the "config" and "utils"
+  modules are gone.
+
+
+Changes in version 2.0
+======================
+
+Released on 2012-07-25.
+
+* This is the first release of the sysbuild package.  The release is
+  numbered 2.0 because 1.x used to exist 10 years ago.  This new release
+  shares no code with previous versions and is not compatible with them
+  in any way.  The sources of sysbuild were located in the pkgsrc
+  repository and sysbuild was only available as a pkgsrc package.
+
+
+1.x versions
+============
+
+sysbuild 1.x existed in pkgsrc from 2002-11-28 to 2004-06-01.  The
+package was removed from the tree because NetBSD's build.sh had improved
+enough to make the 1.x series of sysbuild unnecessary, and also because
+sysbuild 1.x did not work with NetBSD 2.0 and above.
+
+The history of such releases can be checked in the pkgsrc repository if
+desired, but the codebase was so different that I have not bothered to
+port the notes to this file.

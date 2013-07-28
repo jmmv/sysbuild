@@ -1,4 +1,4 @@
-#! @ATF_SH@
+#! __ATF_SH__
 # Copyright 2012 Google Inc.
 # All rights reserved.
 #

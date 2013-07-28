@@ -131,7 +131,7 @@ specifies the name of the configuration.
 will first look for a configuration file in
 .Pa ~/.sysbuild/<config_name>.conf
 and, if not found, will use
-.Pa @SYSBUILD_ETCDIR@/<config_name>.conf .
+.Pa __SYSBUILD_ETCDIR__/<config_name>.conf .
 Any of the two files must exist, or else
 .Nm
 will exit with an error.
@@ -290,9 +290,9 @@ to
 in your user configuration files, and do your builds as another user.
 .Sh FILES
 .Bl -tag -width XXXX
-.It Pa @SYSBUILD_ETCDIR@/
+.It Pa __SYSBUILD_ETCDIR__/
 Directory containing all system-wide configuration files.
-.It Pa @SYSBUILD_ETCDIR@/default.conf
+.It Pa __SYSBUILD_ETCDIR__/default.conf
 Default configuration file to load if the user does not have a
 corresponding
 .Pa ~/.sysbuild/default.conf
@@ -317,4 +317,4 @@ The
 .Nm
 utility was developed by
 .An Julio Merino
-.Aq jmmv@NetBSD.org .
+.Aq jmmv@google.com .

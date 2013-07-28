@@ -47,8 +47,8 @@ SYSBUILD_CONFIG_VARS="BUILD_ROOT BUILD_TARGETS CVSROOT CVSTAG INCREMENTAL_BUILD
 # Paths to installed files.
 #
 # Can be overriden for test purposes only.
-: ${SYSBUILD_ETCDIR="@SYSBUILD_ETCDIR@"}
-: ${SYSBUILD_SHAREDIR="@SYSBUILD_SHAREDIR@"}
+: ${SYSBUILD_ETCDIR="__SYSBUILD_ETCDIR__"}
+: ${SYSBUILD_SHAREDIR="__SYSBUILD_SHAREDIR__"}
 
 
 # Sets defaults for configuration variables and hooks that need to exist.
@@ -330,7 +330,7 @@ sysbuild_config_load() {
 # \param ... Command-line arguments to be processed.
 #
 # \return An exit code to be returned to the user.
-sysbuild_main() {
+main() {
     local config_name="default"
 
     shtk_config_init ${SYSBUILD_CONFIG_VARS}

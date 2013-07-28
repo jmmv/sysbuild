@@ -1,4 +1,4 @@
-#! @ATF_SH@
+#! __ATF_SH__
 # Copyright 2012 Google Inc.
 # All rights reserved.
 #
@@ -35,7 +35,7 @@ MOCK_CVSROOT=":local:$(pwd)/cvsroot"
 # Paths to installed files.
 #
 # Can be overriden for test purposes only.
-: ${SYSBUILD_SHAREDIR="@SYSBUILD_SHAREDIR@"}
+: ${SYSBUILD_SHAREDIR="__SYSBUILD_SHAREDIR__"}
 
 
 # Creates a fake program that records its invocations for later processing.

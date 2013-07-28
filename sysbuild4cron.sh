@@ -35,7 +35,7 @@ shtk_import cli
 # Paths to installed files.
 #
 # Can be overriden for test purposes only.
-: ${SYSBUILD_BINDIR="@SYSBUILD_BINDIR@"}
+: ${SYSBUILD_BINDIR="__SYSBUILD_BINDIR__"}
 
 
 # Sends an email notification upon a failure.
@@ -69,7 +69,7 @@ sysbuild4cron_email() {
 # \param ... Command-line arguments to be processed.
 #
 # \return An exit code to be returned to the user.
-sysbuild4cron_main() {
+main() {
     local logdir="${HOME}/sysbuild/log"
     local recipient="$(id -u -n)"
 
