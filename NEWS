@@ -1,7 +1,7 @@
 Changes in version 2.7
 ======================
 
-STILL UNDER DEVELOPMENT; NOT RELEASED YET.
+Released on 2013-07-28.
 
 * Sources migrated to a GitHub project from the previous copy in
   the pkgsrc repository.  sysbuild is now a first-class package and
