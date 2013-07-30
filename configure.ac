@@ -26,8 +26,8 @@ dnl THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 dnl (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 dnl OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AC_INIT([NetBSD System Builder], [2.7],
-        [tech-userlevel@NetBSD.org], [sysbuild], [])
+AC_INIT([NetBSD System Builder], [2.8],
+        [https://github.com/jmmv/sysbuild/issues/], [sysbuild], [])
 AC_PREREQ([2.65])
 
 
