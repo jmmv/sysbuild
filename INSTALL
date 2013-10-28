@@ -115,7 +115,7 @@ The most common, standard flags given to 'configure' are:
 
   Specifies where the installed programs will look for configuration
   files.  '/sysbuild' will be appended to the given path unless
-  ATF_CONFSUBDIR is redefined as explained later on.
+  SYSBUILD_CONFSUBDIR is redefined as explained later on.
 
 * --help
   Shows information about all available flags and exits immediately,

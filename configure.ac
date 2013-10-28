@@ -43,7 +43,7 @@ AM_INIT_AUTOMAKE([1.9 check-news foreign subdir-objects -Wall])
 AC_ARG_VAR([SYSBUILD_CONFSUBDIR],
            [Subdirectory of sysconfdir under which to look for files])
 if test x"${SYSBUILD_CONFSUBDIR-unset}" = x"unset"; then
-    SYSBUILD_CONFSUBDIR=atf
+    SYSBUILD_CONFSUBDIR=sysbuild
 else
     case ${SYSBUILD_CONFSUBDIR} in
     /*)

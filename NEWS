@@ -3,7 +3,8 @@ Changes in version 2.8
 
 STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 
-* No changes recorded.
+* Fixed default value of SYSBUILD_CONFSUBDIR in configure and a related
+  pasto in the INSTALL document.
 
 
 Changes in version 2.7
