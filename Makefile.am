@@ -70,7 +70,10 @@ dist_man_MANS += sysbuild4cron.1
 
 dist_pkgdata_DATA = env.sh
 
-dist_sysbuild_conf_DATA = default.conf
+dist_sysbuild_conf_DATA  = default.conf
+if HOST_IS_NETBSD
+dist_sysbuild_conf_DATA += NetBSD.conf
+endif
 
 if WITH_ATF
 dist_pkgtests_DATA = Kyuafile

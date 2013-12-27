@@ -79,6 +79,9 @@ AC_PATH_PROG([KYUA], [kyua])
 AM_CONDITIONAL([HAVE_KYUA], [test -n "${KYUA}"])
 
 
+AM_CONDITIONAL([HOST_IS_NETBSD], [test "$(uname -s)" = NetBSD])
+
+
 AC_SUBST(pkgtestsdir, \${testsdir}/sysbuild)
 AC_SUBST(testsdir, \${exec_prefix}/tests)
 

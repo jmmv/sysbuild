@@ -3,6 +3,11 @@ Changes in version 2.8
 
 STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 
+* Made the default.conf configuration file not assume a NetBSD host so
+  that it is usable, for example, on Mac OS X.  The previous sample
+  configuration file has been renamed to NetBSD.conf and is only
+  installed when sysbuild is built on NetBSD.
+
 * Fixed default value of SYSBUILD_CONFSUBDIR in configure and a related
   pasto in the INSTALL document.
 
