@@ -6,6 +6,9 @@ STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 * Fixed default value of SYSBUILD_CONFSUBDIR in configure and a related
   pasto in the INSTALL document.
 
+* Fixed handling of flags in Mac OS X 10.9 due to oddities with the
+  built-in /bin/sh (ancient bash).
+
 
 Changes in version 2.7
 ======================

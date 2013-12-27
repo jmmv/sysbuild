@@ -155,6 +155,7 @@ do_one_build() {
 #
 # \params ... The options and arguments to the command.
 sysbuild_build() {
+    local OPTIND  # Cope with bash failing to reinitialize getopt.
     while getopts ':f' arg "${@}"; do
         case "${arg}" in
             f)  # Convenience flag for a "fast mode".
@@ -335,6 +336,7 @@ main() {
 
     shtk_config_init ${SYSBUILD_CONFIG_VARS}
 
+    local OPTIND  # Cope with bash failing to reinitialize getopt.
     while getopts ':c:o:' arg "${@}"; do
         case "${arg}" in
             c)  # Name of the configuration to load.
