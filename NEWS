@@ -14,6 +14,8 @@ STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 * Fixed handling of flags in Mac OS X 10.9 due to oddities with the
   built-in /bin/sh (ancient bash).
 
+* Fixed path to sysbuild in sysbuild4cron.
+
 
 Changes in version 2.7
 ======================

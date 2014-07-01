@@ -34,7 +34,7 @@ EXTRA_DIST = $(doc_DATA) INSTALL README
 
 BUILD_SED = \
 	sed -e 's,__ATF_SH__,$(ATF_SH),g' \
-	    -e 's,__SYSBUILD_BINDIR__,$(exec_prefix),g' \
+	    -e 's,__SYSBUILD_BINDIR__,$(exec_prefix)/bin,g' \
 	    -e 's,__SYSBUILD_ETCDIR__,$(sysbuild_confdir),g' \
 	    -e 's,__SYSBUILD_SHAREDIR__,$(pkgdatadir),g'
 BUILD_SCRIPT = \
