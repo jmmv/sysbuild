@@ -1,4 +1,3 @@
-#! __ATF_SH__
 # Copyright 2012 Google Inc.
 # All rights reserved.
 #
@@ -26,6 +25,8 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+shtk_import unittest
 
 
 # Creates a fake program that records its invocations for later processing.
@@ -63,25 +64,24 @@ setup_mocks() {
 }
 
 
-atf_test_case no_args
-no_args_body() {
+shtk_unittest_add_test no_args
+no_args_test() {
     setup_mocks
-    atf_check sysbuild4cron
+    assert_command sysbuild4cron
 
-    cat >expout <<EOF
+    assert_file stdin commands.log <<EOF
 Command: sysbuild
 
 EOF
-    atf_check -o file:expout cat commands.log
 }
 
 
-atf_test_case some_args
-some_args_body() {
+shtk_unittest_add_test some_args
+some_args_test() {
     setup_mocks
-    atf_check sysbuild4cron -- -k -Z foo bar
+    assert_command sysbuild4cron -- -k -Z foo bar
 
-    cat >expout <<EOF
+    assert_file stdin commands.log <<EOF
 Command: sysbuild
 Arg: -k
 Arg: -Z
@@ -89,19 +89,18 @@ Arg: foo
 Arg: bar
 
 EOF
-    atf_check -o file:expout cat commands.log
 }
 
 
-atf_test_case sysbuild_fails
-sysbuild_fails_body() {
+shtk_unittest_add_test sysbuild_fails
+sysbuild_fails_test() {
     setup_mocks
     for number in $(seq 150); do
         echo "echo line ${number}" >>bin/sysbuild
     done
     echo "exit 1" >>bin/sysbuild
 
-    atf_check sysbuild4cron a
+    assert_command sysbuild4cron a
 
     name="$(cd sysbuild/log && echo sysbuild4cron.*.log)"
     cat >expout <<EOF
@@ -127,20 +126,19 @@ EOF
         echo "stdin: line ${number}" >>expout
     done
     echo >>expout
-
-    atf_check -o file:expout cat commands.log
+    assert_file file:expout commands.log
 }
 
 
-atf_test_case custom_flags
-custom_flags_body() {
+shtk_unittest_add_test custom_flags
+custom_flags_test() {
     setup_mocks
     echo "exit 1" >>bin/sysbuild
 
-    atf_check sysbuild4cron -l path/to/logs -r somebody@example.net
+    assert_command sysbuild4cron -l path/to/logs -r somebody@example.net
 
     name="$(cd path/to/logs && echo sysbuild4cron.*.log)"
-    cat >expout <<EOF
+    assert_file stdin commands.log <<EOF
 Command: sysbuild
 
 Command: mail
@@ -159,39 +157,28 @@ stdin: The last 100 of the log follow:
 stdin: 
 
 EOF
-
-    atf_check -o file:expout cat commands.log
 }
 
 
-atf_test_case capture_out_and_err
-capture_out_and_err_body() {
+shtk_unittest_add_test capture_out_and_err
+capture_out_and_err_test() {
     setup_mocks
     echo "echo foo" >>bin/sysbuild
     echo "echo bar 1>&2" >>bin/sysbuild
     echo "exit 1" >>bin/sysbuild
 
-    atf_check sysbuild4cron
+    assert_command sysbuild4cron
 
-    atf_check -o match:"stdin: foo" -o match:"stdin: bar" cat commands.log
+    expect_file match:"stdin: foo" commands.log
+    expect_file match:"stdin: bar" commands.log
 }
 
 
-atf_test_case unknown_flag
-unknown_flag_body() {
+shtk_unittest_add_test unknown_flag
+unknown_flag_test() {
     cat >experr <<EOF
 sysbuild4cron: E: Unknown option -Z
 Type 'man sysbuild4cron' for help
 EOF
-    atf_check -s exit:1 -e file:experr sysbuild4cron -Z
-}
-
-
-atf_init_test_cases() {
-    atf_add_test_case no_args
-    atf_add_test_case some_args
-    atf_add_test_case sysbuild_fails
-    atf_add_test_case custom_flags
-    atf_add_test_case capture_out_and_err
-    atf_add_test_case unknown_flag
+    assert_command -s exit:1 -e file:experr sysbuild4cron -Z
 }

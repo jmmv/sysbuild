@@ -33,8 +33,7 @@ noinst_DATA = INSTALL README
 EXTRA_DIST = $(doc_DATA) INSTALL README
 
 BUILD_SED = \
-	sed -e 's,__ATF_SH__,$(ATF_SH),g' \
-	    -e 's,__SYSBUILD_BINDIR__,$(exec_prefix)/bin,g' \
+	sed -e 's,__SYSBUILD_BINDIR__,$(exec_prefix)/bin,g' \
 	    -e 's,__SYSBUILD_ETCDIR__,$(sysbuild_confdir),g' \
 	    -e 's,__SYSBUILD_SHAREDIR__,$(pkgdatadir),g'
 BUILD_SCRIPT = \
@@ -44,8 +43,8 @@ BUILD_FILE = \
 	$(BUILD_SED) <"$(srcdir)/$${source}" >"$${target}.tmp"; \
 	mv "$${target}.tmp" "$${target}"
 BUILD_TEST = \
-	$(BUILD_FILE); \
-	chmod +x "$${target}"
+	$(BUILD_SED) <"$(srcdir)/$${source}" | \
+	    $(SHTK_TOOL) build -m shtk_unittest_main -o "$${target}" -
 
 bin_SCRIPTS = sysbuild
 CLEANFILES = sysbuild
@@ -75,7 +74,6 @@ if HOST_IS_NETBSD
 dist_sysbuild_conf_DATA += NetBSD.conf
 endif
 
-if WITH_ATF
 dist_pkgtests_DATA = Kyuafile
 
 pkgtests_SCRIPTS = sysbuild_test
@@ -115,13 +113,6 @@ missing-kyua:
 check-local: missing-kyua
 installcheck-local: missing-kyua
 endif  # HAVE_KYUA
-else  # WITH_ATF
-dist-hook: forbid-dist
-PHONY_TARGETS += forbid-dist
-forbid-dist:
-	@echo "Sorry; cannot make dist without atf."
-	@false
-endif  # WITH_ATF
 
 PHONY_TARGETS += clean-all
 clean-all:
