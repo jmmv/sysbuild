@@ -182,3 +182,13 @@ Type 'man sysbuild4cron' for help
 EOF
     assert_command -s exit:1 -e file:experr sysbuild4cron -Z
 }
+
+
+shtk_unittest_add_test missing_argument
+missing_argument_test() {
+    cat >experr <<EOF
+sysbuild4cron: E: Missing argument to option -l
+Type 'man sysbuild4cron' for help
+EOF
+    assert_command -s exit:1 -e file:experr sysbuild4cron -l
+}

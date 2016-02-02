@@ -164,7 +164,7 @@ sysbuild_build() {
                 ;;
 
             \?)
-                shtk_cli_usage_error "Unknown option -${OPTARG}"
+                shtk_cli_usage_error "Unknown option -${OPTARG} in build"
                 ;;
         esac
     done
@@ -345,6 +345,10 @@ main() {
 
             o)  # Override for a particular configuration variable.
                 shtk_config_override "${OPTARG}"
+                ;;
+
+            :)
+                shtk_cli_usage_error "Missing argument to option -${OPTARG}"
                 ;;
 
             \?)

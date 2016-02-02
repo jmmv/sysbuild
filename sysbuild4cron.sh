@@ -86,6 +86,10 @@ main() {
                 recipient="${OPTARG}"
                 ;;
 
+            :)
+                shtk_cli_usage_error "Missing argument to option -${OPTARG}"
+                ;;
+
             \?)
                 shtk_cli_usage_error "Unknown option -${OPTARG}"
                 ;;

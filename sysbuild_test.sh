@@ -650,6 +650,16 @@ EOF
 }
 
 
+shtk_unittest_add_test build__unknown_flag
+build__unknown_flag_test() {
+cat >experr <<EOF
+sysbuild: E: Unknown option -Z in build
+Type 'man sysbuild' for help
+EOF
+    assert_command -s exit:1 -e file:experr sysbuild -c /dev/null build -f -Z
+}
+
+
 shtk_unittest_add_test config__builtins
 config__builtins_test() {
     cat >expout <<EOF
@@ -1137,4 +1147,14 @@ sysbuild: E: Unknown option -Z
 Type 'man sysbuild' for help
 EOF
     assert_command -s exit:1 -e file:experr sysbuild -Z
+}
+
+
+shtk_unittest_add_test missing_argument
+missing_argument_test() {
+    cat >experr <<EOF
+sysbuild: E: Missing argument to option -o
+Type 'man sysbuild' for help
+EOF
+    assert_command -s exit:1 -e file:experr sysbuild -o
 }
