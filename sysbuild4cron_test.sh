@@ -110,7 +110,7 @@ Arg: a
 Command: mail
 Arg: -s
 Arg: sysbuild failure report
-Arg: jmmv
+Arg: ${USER}
 stdin: The following command has failed:
 stdin: 
 stdin:     $(pwd)/bin/sysbuild a
