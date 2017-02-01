@@ -50,19 +50,22 @@ bin_SCRIPTS = sysbuild
 CLEANFILES = sysbuild
 EXTRA_DIST += sysbuild.sh
 sysbuild: $(srcdir)/sysbuild.sh
-	source=sysbuild.sh target=sysbuild; $(BUILD_SCRIPT)
+	$(AM_V_GEN)source=sysbuild.sh target=sysbuild; \
+	$(BUILD_SCRIPT)
 
 bin_SCRIPTS += sysbuild4cron
 CLEANFILES += sysbuild4cron
 EXTRA_DIST += sysbuild4cron.sh
 sysbuild4cron: $(srcdir)/sysbuild4cron.sh
-	source=sysbuild4cron.sh target=sysbuild4cron; $(BUILD_SCRIPT)
+	$(AM_V_GEN)source=sysbuild4cron.sh target=sysbuild4cron; \
+	$(BUILD_SCRIPT)
 
 man_MANS = sysbuild.1
 CLEANFILES += sysbuild.1
 EXTRA_DIST += sysbuild.1.in
 sysbuild.1: $(srcdir)/sysbuild.1.in
-	source=sysbuild.1.in target=sysbuild.1; $(BUILD_FILE)
+	$(AM_V_GEN)source=sysbuild.1.in target=sysbuild.1; \
+	$(BUILD_FILE)
 
 dist_man_MANS  = sysbuild.conf.5
 dist_man_MANS += sysbuild4cron.1
@@ -80,13 +83,15 @@ pkgtests_SCRIPTS = sysbuild_test
 CLEANFILES += sysbuild_test
 EXTRA_DIST += sysbuild_test.sh
 sysbuild_test: $(srcdir)/sysbuild_test.sh
-	source=sysbuild_test.sh target=sysbuild_test; $(BUILD_TEST)
+	$(AM_V_GEN)source=sysbuild_test.sh target=sysbuild_test; \
+	$(BUILD_TEST)
 
 pkgtests_SCRIPTS += sysbuild4cron_test
 CLEANFILES += sysbuild4cron_test
 EXTRA_DIST += sysbuild4cron_test.sh
 sysbuild4cron_test: $(srcdir)/sysbuild4cron_test.sh
-	source=sysbuild4cron_test.sh target=sysbuild4cron_test; $(BUILD_TEST)
+	$(AM_V_GEN)source=sysbuild4cron_test.sh target=sysbuild4cron_test; \
+	$(BUILD_TEST)
 
 if HAVE_KYUA
 CHECK_ENVIRONMENT  = PATH=$(abs_top_builddir):$${PATH}
