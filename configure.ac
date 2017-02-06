@@ -65,7 +65,7 @@ m4_ifndef([PKG_CHECK_MODULES],
 
 m4_ifndef([SHTK_CHECK],
     [m4_fatal([Cannot find shtk.m4; see the INSTALL document for help])])
-SHTK_CHECK([>= 1.6])
+SHTK_CHECK([>= 1.7])
 
 
 AC_PATH_PROG([KYUA], [kyua])

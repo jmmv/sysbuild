@@ -111,7 +111,8 @@ SRCDIR=$(pwd)/s
 XSRCDIR=$(pwd)/x
 EOF
 
-    assert_command -o save:stdout -e save:stderr sysbuild -c test.conf build
+    SHTK_HW_NCPUS=1 assert_command -o save:stdout -e save:stderr \
+        sysbuild -c test.conf build
 
     assert_file stdin commands.log <<EOF
 Command: cvs
@@ -155,7 +156,7 @@ build__defaults_test() {
     create_mock_binary cvs yes
     PATH="$(pwd):${PATH}"
 
-    assert_command -o save:stdout -e save:stderr sysbuild \
+    SHTK_HW_NCPUS=1 assert_command -o save:stdout -e save:stderr sysbuild \
         -c /dev/null -o CVSROOT="${mock_cvsroot}" build
 
     assert_file stdin commands.log <<EOF
@@ -224,7 +225,7 @@ build__fast_mode_test() {
     mkdir -p "sysbuild/$(uname -m)/destdir/bin"
     mkdir -p "sysbuild/$(uname -m)/destdir/stand/$(uname -m)/1.2.3"
 
-    assert_command -o save:stdout -e save:stderr sysbuild \
+    SHTK_HW_NCPUS=1 assert_command -o save:stdout -e save:stderr sysbuild \
         -c /dev/null -o CVSROOT="${mock_cvsroot}" build -f
 
     assert_file stdin commands.log <<EOF
@@ -401,7 +402,7 @@ build__mkvars_test() {
     mkdir -p sysbuild/src
     create_mock_binary sysbuild/src/build.sh
 
-    assert_command -o save:stdout -e save:stderr sysbuild \
+    SHTK_HW_NCPUS=1 assert_command -o save:stdout -e save:stderr sysbuild \
         -c /dev/null -o CVSROOT="${mock_cvsroot}" \
         -o MKVARS="MKDEBUG=yes FOO=bar" build -f
 
@@ -432,7 +433,7 @@ build__with_x11_test() {
     create_mock_binary cvs yes
     PATH="$(pwd):${PATH}"
 
-    assert_command -o save:stdout -e save:stderr sysbuild \
+    SHTK_HW_NCPUS=1 assert_command -o save:stdout -e save:stderr sysbuild \
         -c /dev/null -o CVSROOT="${mock_cvsroot}" \
         -o XSRCDIR="${HOME}/sysbuild/xsrc" build
 
@@ -478,7 +479,7 @@ build__some_args_test() {
     create_mock_binary cvs yes
     PATH="$(pwd):${PATH}"
 
-    assert_command -o save:stdout -e save:stderr sysbuild \
+    SHTK_HW_NCPUS=1 assert_command -o save:stdout -e save:stderr sysbuild \
         -c /dev/null -o CVSROOT="${mock_cvsroot}" build a foo b
 
     assert_file stdin commands.log <<EOF
@@ -670,13 +671,13 @@ CVSTAG is undefined
 INCREMENTAL_BUILD = false
 MACHINES = $(uname -m)
 MKVARS is undefined
-NJOBS is undefined
+NJOBS = 123
 RELEASEDIR = ${HOME}/sysbuild/release
 SRCDIR = ${HOME}/sysbuild/src
 UPDATE_SOURCES = true
 XSRCDIR is undefined
 EOF
-    assert_command -o file:expout sysbuild -c /dev/null config
+    SHTK_HW_NCPUS=123 assert_command -o file:expout sysbuild -c /dev/null config
 }
 
 
@@ -755,14 +756,14 @@ CVSTAG = the-new-tag
 INCREMENTAL_BUILD = false
 MACHINES = $(uname -m)
 MKVARS is undefined
-NJOBS is undefined
+NJOBS = 88
 RELEASEDIR = ${HOME}/sysbuild/release
 SRCDIR is undefined
 UPDATE_SOURCES = true
 XSRCDIR is undefined
 EOF
-    assert_command -o file:expout sysbuild -c custom.conf -o CVSROOT="foo bar" \
-        -o CVSTAG=the-new-tag -o SRCDIR= config
+    SHTK_HW_NCPUS=99 assert_command -o file:expout sysbuild -c custom.conf \
+        -o CVSROOT="foo bar" -o CVSTAG=the-new-tag -o NJOBS=88 -o SRCDIR= config
 }
 
 

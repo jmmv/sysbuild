@@ -32,6 +32,7 @@
 shtk_import cli
 shtk_import config
 shtk_import cvs
+shtk_import hw
 shtk_import list
 shtk_import process
 
@@ -63,6 +64,7 @@ sysbuild_set_defaults() {
     shtk_config_set CVSROOT ":ext:anoncvs@anoncvs.NetBSD.org:/cvsroot"
     shtk_config_set INCREMENTAL_BUILD "false"
     shtk_config_set MACHINES "$(uname -m)"
+    shtk_config_set NJOBS "$(shtk_hw_ncpus)"
     shtk_config_set RELEASEDIR "${HOME}/sysbuild/release"
     shtk_config_set SRCDIR "${HOME}/sysbuild/src"
     shtk_config_set UPDATE_SOURCES "true"
@@ -82,8 +84,9 @@ do_one_build() {
 
     local basedir="$(shtk_config_get BUILD_ROOT)/${machine}"
 
+    local njobs="$(shtk_config_get NJOBS)"
     local jflag=
-    if shtk_config_has NJOBS; then
+    if [ "${njobs}" -gt 1 ]; then
         jflag="-j$(shtk_config_get NJOBS)"
     fi
 

@@ -8,6 +8,9 @@ STILL UNDER DEVELOPMENT; NOT RELEASED YET.
   configuration file has been renamed to NetBSD.conf and is only
   installed when sysbuild is built on NetBSD.
 
+* Changed the default value of NJOBS to be set to the number of CPUs in
+  the machine.
+
 * Fixed default value of SYSBUILD_CONFSUBDIR in configure and a related
   pasto in the INSTALL document.
 

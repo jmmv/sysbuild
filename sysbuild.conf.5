@@ -25,7 +25,7 @@
 .\" THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 .\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 .\" OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-.Dd March 8, 2013
+.Dd February 6, 2017
 .Dt SYSBUILD.CONF 5
 .Os
 .Sh NAME
@@ -39,11 +39,6 @@ optionally fill in a set of hooks provided as shell functions.
 .Ss Configuration variables
 As scripts, configuration files can perform any magic they desire to deduce
 the value of configuration variables.
-For example, the default configuration file shipped with
-.Xr sysbuild 1
-automatically deduces the value of the
-.Va NJOBS
-variable by looking at how many CPUs are available in the system.
 .Pp
 The following variables configure the source trees:
 .Bl -tag -width INCREMENTAL_BUILD
@@ -151,11 +146,12 @@ A useful example would be:
 Default: not defined.
 .It Va NJOBS
 Number of parallel jobs to use during the build.
-If not set, disables parallel builds (which, due to
-.Nm make 1
-semantics, is not the same as setting this to 1).
+If set to 1, disables parallel builds (i.e. does not pass any
+.Fl j
+flag to
+.Xr make 1 ) .
 .Pp
-Default: not defined.
+Default: number of CPUs in the machine.
 .El
 .Ss Hooks
 Hooks are user-provided routines invoked at particular points during the
