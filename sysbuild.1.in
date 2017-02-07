@@ -122,7 +122,7 @@ includes any directory separator (aka, one or more slashes) or the
 .Sq .conf
 suffix, then this specifies the path of the configuration file to load.
 .Pp
-.If
+If
 .Ar config_name
 is a plain name without any directory components nor extension, then this
 specifies the name of the configuration.
