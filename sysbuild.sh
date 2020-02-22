@@ -86,6 +86,31 @@ do_one_build() {
 
     local basedir="$(shtk_config_get BUILD_ROOT)/${machine}"
 
+    if [ "$(shtk_config_get FETCH_METHOD)" = "git" ]; then
+        local lsb_file="${basedir}/.srchash_last_successful_build"
+        local lsb=
+        if [ -f "${lsb_file}" ]; then
+            read lsb _ <"${lsb_file}"
+        fi
+        local hash="$(shtk_git_gethash $(shtk_config_get SRCDIR))"
+        if [ "${lsb}" = "${hash}" ]; then
+            if shtk_config_has XSRCDIR ; then
+                lsb_file="${basedir}/.xsrchash_last_successful_build"
+                if [ -f "${lsb_file}" ]; then
+                    read lsb _ <"${lsb_file}"
+                fi
+                hash="$(shtk_git_gethash $(shtk_config_get XSRCDIR))"
+                if [ "${lsb}" = "${hash}" ]; then
+                    shtk_cli_info "(no change in sources since last successful build)"
+                    return 0
+                fi
+            else
+                shtk_cli_info "(no change in sources since last successful build)"
+                return 0
+            fi
+        fi
+    fi
+
     local njobs="$(shtk_config_get NJOBS)"
     local jflag=
     if [ "${njobs}" -gt 1 ]; then
@@ -155,6 +180,13 @@ do_one_build() {
         ${uflag} \
         ${xflag} \
         ${targets} >"${basedir}/build.log" 2>&1 )
+
+    if [ $? -eq 0 -a "$(shtk_config_get FETCH_METHOD)" = "git" ]; then
+        echo "$(shtk_git_gethash $(shtk_config_get SRCDIR))" >"${basedir}/.srchash_last_successful_build"
+        if shtk_config_hash XSRCDIR; then
+            echo "$(shtk_git_gethash $(shtk_config_get XSRCDIR))" >"${basedir}/.xsrchash_last_successful_build"
+        fi
+    fi
 }
 
 
