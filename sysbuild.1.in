@@ -70,6 +70,8 @@ now.
 .Nm
 can be seen as a simple wrapper over
 .Xr cvs 1
+or
+.Xr git 1
 and the
 .Nm build.sh
 script that ships with the
@@ -261,12 +263,18 @@ The fetch command downloads or updates the
 .Nx
 source trees, which include src and, optionally, xsrc.
 .Pp
+The method used to fetch the source is either git or cvs and it
+is choosen using
+.Va FETCH_METHOD
+, it is cvs by default.
 If the modules do not exist yet in the locations specified by
 .Va SRCDIR
 and
 .Va XSRCDIR ,
 this performs an initial CVS checkout of the trees.
 If the modules exist, this performs a CVS update.
+If using git, repositories must have been cloned and switched to the
+desired branch as sysbuild only performs a pull.
 .Pp
 The
 .Va CVSROOT

@@ -32,6 +32,7 @@
 shtk_import cli
 shtk_import config
 shtk_import cvs
+shtk_import git
 shtk_import hw
 shtk_import list
 shtk_import process
@@ -40,9 +41,9 @@ shtk_import process
 # List of valid configuration variables.
 #
 # Please remember to update sysbuild.conf(5) if you change this list.
-SYSBUILD_CONFIG_VARS="BUILD_ROOT BUILD_TARGETS CVSROOT CVSTAG INCREMENTAL_BUILD
-                      MACHINES MKVARS NJOBS RELEASEDIR SRCDIR UPDATE_SOURCES
-                      XSRCDIR"
+SYSBUILD_CONFIG_VARS="BUILD_ROOT BUILD_TARGETS CVSROOT CVSTAG FETCH_METHOD
+		      INCREMENTAL_BUILD MACHINES MKVARS NJOBS RELEASEDIR
+                      SRCDIR UPDATE_SOURCES XSRCDIR"
 
 
 # Paths to installed files.
@@ -62,6 +63,7 @@ sysbuild_set_defaults() {
     shtk_config_set BUILD_ROOT "${HOME}/sysbuild"
     shtk_config_set BUILD_TARGETS "release"
     shtk_config_set CVSROOT ":ext:anoncvs@anoncvs.NetBSD.org:/cvsroot"
+    shtk_config_set FETCH_METHOD "cvs"
     shtk_config_set INCREMENTAL_BUILD "false"
     shtk_config_set MACHINES "$(uname -m)"
     shtk_config_set NJOBS "$(shtk_hw_ncpus)"
@@ -208,8 +210,9 @@ sysbuild_build() {
 
     shtk_config_run_hook pre_build_hook
     for machine in ${machines}; do
-        printf "Build ${machine}...\n"
-        do_one_build "${machine}" && printf "SUCCESS\n" || printf "FAIL\n"
+        shtk_cli_info "Build ${machine}...\n"
+        do_one_build "${machine}" && shtk_cli_info "Build ${machine} SUCCESS\n" ||\
+            shtk_cli_info "Build ${machine} FAIL\n"
     done
     shtk_config_run_hook post_build_hook
 }
@@ -285,15 +288,26 @@ sysbuild_fetch() {
     shtk_config_run_hook pre_fetch_hook
 
     local cvsroot="$(shtk_config_get CVSROOT)"
+    local fetch_method="$(shtk_config_get FETCH_METHOD)"
 
-    shtk_cli_info "Updating base source tree"
-    shtk_cvs_fetch "${cvsroot}" src "$(shtk_config_get_default CVSTAG '')" \
-        "$(shtk_config_get SRCDIR)"
+    shtk_cli_info "Updating base source tree using ${fetch_method}"
+    if [ "${fetch_method}" = "cvs" ]; then
+        shtk_cvs_fetch "${cvsroot}" src "$(shtk_config_get_default CVSTAG '')" \
+            "$(shtk_config_get SRCDIR)"
 
-    if shtk_config_has XSRCDIR; then
-        shtk_cli_info "Updating X11 source tree"
-        shtk_cvs_fetch "${cvsroot}" xsrc \
-            "$(shtk_config_get_default CVSTAG '')" "$(shtk_config_get XSRCDIR)"
+        if shtk_config_has XSRCDIR; then
+            shtk_cli_info "Updating X11 source tree"
+            shtk_cvs_fetch "${cvsroot}" xsrc \
+                "$(shtk_config_get_default CVSTAG '')" "$(shtk_config_get XSRCDIR)"
+        fi
+    elif [ "${fetch_method}" = "git" ]; then
+        shtk_git_pull "$(shtk_config_get SRCDIR)"
+        if shtk_config_has XSRCDIR; then
+            shtk_cli_info "Updating X11 source tree"
+            shtk_git_pull "$(shtk_config_get XSRCDIR)"
+        fi
+    else
+        shtk_cli_usage_error "FETCH_METHOD '${fetch_method}' is invalid"
     fi
 
     shtk_config_run_hook post_fetch_hook
