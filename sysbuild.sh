@@ -137,6 +137,8 @@ do_one_build() {
         esac
     done
 
+    mkdir -p "${basedir}"
+
     ( cd "$(shtk_config_get SRCDIR)" && shtk_process_run ./build.sh \
         -D"${basedir}/destdir" \
         -M"${basedir}/obj" \
@@ -150,7 +152,7 @@ do_one_build() {
         -m"${machine}" \
         ${uflag} \
         ${xflag} \
-        ${targets} )
+        ${targets} >"${basedir}/build.log" 2>&1 )
 }
 
 
@@ -206,7 +208,8 @@ sysbuild_build() {
 
     shtk_config_run_hook pre_build_hook
     for machine in ${machines}; do
-        do_one_build "${machine}"
+        printf "Build ${machine}...\n"
+        do_one_build "${machine}" && printf "SUCCESS\n" || printf "FAIL\n"
     done
     shtk_config_run_hook post_build_hook
 }

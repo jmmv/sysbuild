@@ -167,7 +167,11 @@ For every machine type listed in
 issues a
 .Nm build.sh
 call for that particular machine using the rest of the settings defined in
-the configuration file.
+the configuration file. Each
+.Nm build.sh
+call produces
+.Pa ${BUILD_ROOT}/${MACHINE}/build.log
+and sysbuild echoes build SUCESS or FAILURE on its output for each machine.
 The targets passed to the
 .Nm build.sh
 script are those defined in the
