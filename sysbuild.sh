@@ -183,7 +183,7 @@ do_one_build() {
 
     if [ $? -eq 0 -a "$(shtk_config_get FETCH_METHOD)" = "git" ]; then
         echo "$(shtk_git_gethash $(shtk_config_get SRCDIR))" >"${basedir}/.srchash_last_successful_build"
-        if shtk_config_hash XSRCDIR; then
+        if shtk_config_has XSRCDIR; then
             echo "$(shtk_git_gethash $(shtk_config_get XSRCDIR))" >"${basedir}/.xsrchash_last_successful_build"
         fi
     fi
