@@ -668,6 +668,7 @@ BUILD_ROOT = ${HOME}/sysbuild
 BUILD_TARGETS = release
 CVSROOT = :ext:anoncvs@anoncvs.NetBSD.org:/cvsroot
 CVSTAG is undefined
+FETCH_METHOD = cvs
 INCREMENTAL_BUILD = false
 MACHINES = $(uname -m)
 MKVARS is undefined
@@ -753,6 +754,7 @@ BUILD_ROOT = /tmp/test
 BUILD_TARGETS = release
 CVSROOT = foo bar
 CVSTAG = the-new-tag
+FETCH_METHOD = cvs
 INCREMENTAL_BUILD = false
 MACHINES = $(uname -m)
 MKVARS is undefined
