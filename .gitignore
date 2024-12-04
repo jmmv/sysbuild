@@ -1,9 +1,13 @@
+*~
 *_test
+*.log
+*.trs
 Makefile
 Makefile.in
 aclocal.m4
 admin/install-sh
 admin/missing
+admin/test-driver
 autom4te.cache
 config.log
 config.status

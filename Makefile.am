@@ -80,45 +80,28 @@ endif
 
 dist_pkgtests_DATA = Kyuafile
 
-pkgtests_SCRIPTS = sysbuild_test
+TESTS = sysbuild_test
+check_SCRIPTS = sysbuild_test
 CLEANFILES += sysbuild_test
 EXTRA_DIST += sysbuild_test.sh
 sysbuild_test: $(srcdir)/sysbuild_test.sh
 	$(AM_V_GEN)source=sysbuild_test.sh target=sysbuild_test; \
 	$(BUILD_TEST)
 
-pkgtests_SCRIPTS += sysbuild4cron_test
+TESTS += sysbuild4cron_test
+check_SCRIPTS += sysbuild4cron_test
 CLEANFILES += sysbuild4cron_test
 EXTRA_DIST += sysbuild4cron_test.sh
 sysbuild4cron_test: $(srcdir)/sysbuild4cron_test.sh
 	$(AM_V_GEN)source=sysbuild4cron_test.sh target=sysbuild4cron_test; \
 	$(BUILD_TEST)
 
-if HAVE_KYUA
-CHECK_ENVIRONMENT  = PATH=$(abs_top_builddir):$${PATH}
-CHECK_ENVIRONMENT += SYSBUILD_SHAREDIR="$(abs_top_srcdir)"
+TESTS_ENVIRONMENT  = PATH=$(abs_top_builddir):$${PATH}
+TESTS_ENVIRONMENT += SYSBUILD_SHAREDIR="$(abs_top_srcdir)"
 INSTALLCHECK_ENVIRONMENT = PATH=$(prefix)/bin:$${PATH}
 
-check-local: check-kyua
-PHONY_TARGETS += check-kyua
-check-kyua:
-	$(CHECK_ENVIRONMENT) $(TESTS_ENVIRONMENT) \
-	    $(KYUA) --config=none test \
-	    --kyuafile='$(top_srcdir)/Kyuafile' --build-root='$(top_builddir)'
-
-installcheck-local: installcheck-kyua
-PHONY_TARGETS += installcheck-kyua
-installcheck-kyua:
-	cd $(pkgtestsdir) && $(INSTALLCHECK_ENVIRONMENT) $(TESTS_ENVIRONMENT) \
-	    $(KYUA) --config=none test
-else  # HAVE_KYUA
-PHONY_TARGETS += missing-kyua
-missing-kyua:
-	@echo "WARNING: kyua not found; no tests run"
-
-check-local: missing-kyua
-installcheck-local: missing-kyua
-endif  # HAVE_KYUA
+installcheck-local:
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS TESTS_ENVIRONMENT="$(INSTALLCHECK_ENVIRONMENT)"
 
 PHONY_TARGETS += clean-all
 clean-all:

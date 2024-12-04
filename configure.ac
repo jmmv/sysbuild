@@ -68,10 +68,6 @@ m4_ifndef([SHTK_CHECK],
 SHTK_CHECK([>= 1.7])
 
 
-AC_PATH_PROG([KYUA], [kyua])
-AM_CONDITIONAL([HAVE_KYUA], [test -n "${KYUA}"])
-
-
 AM_CONDITIONAL([HOST_IS_NETBSD], [test "$(uname -s)" = NetBSD])
 
 
