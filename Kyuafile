@@ -1,6 +1,0 @@
-syntax("kyuafile", 1)
-
-test_suite("sysbuild")
-
-plain_test_program{name="sysbuild_test"}
-plain_test_program{name="sysbuild4cron_test"}
