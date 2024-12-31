@@ -78,11 +78,24 @@ sysbuild_set_defaults() {
 
 # Performs a build for a single machine type.
 #
-# \param machine The type of the machine to build for.
+# \param machine_pair The type of the machine to build for. Can optionally
+#    contain the architecture in the "machine-arch" form.
 do_one_build() {
-    local machine="${1}"; shift
+    local machine_pair="${1}"; shift
 
-    local basedir="$(shtk_config_get BUILD_ROOT)/${machine}"
+    local aflag=
+    local mflag=
+    case "${machine_pair}" in
+        *-*)
+            mflag="-m${machine_pair%%-*}" # First word in pair.
+            aflag="-a${machine_pair#*-}" # Other words in pair.
+            ;;
+        *)
+            mflag="-m${machine_pair}"
+            ;;
+    esac
+
+    local basedir="$(shtk_config_get BUILD_ROOT)/${machine_pair}"
 
     local njobs="$(shtk_config_get NJOBS)"
     local jflag=
@@ -147,7 +160,8 @@ do_one_build() {
         ${Vflags} \
         ${Xflag} \
         ${jflag} \
-        -m"${machine}" \
+        ${aflag} \
+        ${mflag} \
         ${uflag} \
         ${xflag} \
         ${targets} )

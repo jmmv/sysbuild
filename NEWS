@@ -24,6 +24,10 @@ STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 
 * Fixed option parsing to detect missing arguments to options.
 
+* Added support to build specific architectures within a machine type.
+  This is done via new syntax in the MACHINE variable, which can now
+  take pairs like evbarm-aarch64.
+
 
 Changes in version 2.7
 ======================

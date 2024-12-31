@@ -378,6 +378,72 @@ EOF
 }
 
 
+shtk_unittest_add_test build__machine_arch_targets__ok
+build__machine_arch_targets__ok_test() {
+    mock_cvsroot=":local:$(pwd)/cvsroot"
+    create_mock_cvsroot "${mock_cvsroot}"
+
+    create_mock_binary cvs yes
+    PATH="$(pwd):${PATH}"
+
+    assert_command -o save:stdout -e save:stderr sysbuild \
+        -c /dev/null -o CVSROOT="${mock_cvsroot}" \
+        -o MACHINES="evbarm-aarch64 evbarm-earmv7hf fake-multi-dashes" \
+        -o NJOBS=2 build evbarm-aarch64:sets release
+
+    assert_file stdin commands.log <<EOF
+Command: cvs
+Directory: ${HOME}/sysbuild/src/.cvs-checkout
+Arg: -d${mock_cvsroot}
+Arg: -q
+Arg: checkout
+Arg: -P
+Arg: src
+
+Command: build.sh
+Directory: ${HOME}/sysbuild/src
+Arg: -D${HOME}/sysbuild/evbarm-aarch64/destdir
+Arg: -M${HOME}/sysbuild/evbarm-aarch64/obj
+Arg: -N2
+Arg: -R${HOME}/sysbuild/release
+Arg: -T${HOME}/sysbuild/evbarm-aarch64/tools
+Arg: -U
+Arg: -j2
+Arg: -aaarch64
+Arg: -mevbarm
+Arg: sets
+Arg: release
+
+Command: build.sh
+Directory: ${HOME}/sysbuild/src
+Arg: -D${HOME}/sysbuild/evbarm-earmv7hf/destdir
+Arg: -M${HOME}/sysbuild/evbarm-earmv7hf/obj
+Arg: -N2
+Arg: -R${HOME}/sysbuild/release
+Arg: -T${HOME}/sysbuild/evbarm-earmv7hf/tools
+Arg: -U
+Arg: -j2
+Arg: -aearmv7hf
+Arg: -mevbarm
+Arg: release
+
+Command: build.sh
+Directory: ${HOME}/sysbuild/src
+Arg: -D${HOME}/sysbuild/fake-multi-dashes/destdir
+Arg: -M${HOME}/sysbuild/fake-multi-dashes/obj
+Arg: -N2
+Arg: -R${HOME}/sysbuild/release
+Arg: -T${HOME}/sysbuild/fake-multi-dashes/tools
+Arg: -U
+Arg: -j2
+Arg: -amulti-dashes
+Arg: -mfake
+Arg: release
+
+EOF
+}
+
+
 shtk_unittest_add_test build__machine_targets__unmatched
 build__machine_targets__unmatched_test() {
     mock_cvsroot=":local:$(pwd)/cvsroot"
@@ -823,6 +889,22 @@ EOF
     assert_command -s exit:0 -o file:expout sysbuild -c /dev/null \
         -o BUILD_ROOT=/my/root -o MACHINES="amd64 i386" -o SRCDIR=/usr/src \
         env macppc
+}
+
+
+shtk_unittest_add_test env__explicit_machine_arch
+env__explicit_machine_arch_test() {
+    cat >expout <<EOF
+. "${SYSBUILD_SHAREDIR}/env.sh" ;
+PATH="/my/root/evbarm-aarch64/tools/bin:\${PATH}"
+D="/my/root/evbarm-aarch64/destdir"
+O="/my/root/evbarm-aarch64/obj/usr/src"
+S="/usr/src"
+T="/my/root/evbarm-aarch64/tools"
+EOF
+    assert_command -s exit:0 -o file:expout sysbuild -c /dev/null \
+        -o BUILD_ROOT=/my/root -o MACHINES="amd64 evbarm evbarm:aarch64 i386" \
+        -o SRCDIR=/usr/src env evbarm-aarch64
 }
 
 
