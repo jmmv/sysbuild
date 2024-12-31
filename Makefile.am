@@ -78,8 +78,6 @@ if HOST_IS_NETBSD
 dist_sysbuild_conf_DATA += NetBSD.conf
 endif
 
-dist_pkgtests_DATA = Kyuafile
-
 TESTS = sysbuild_test
 check_SCRIPTS = sysbuild_test
 CLEANFILES += sysbuild_test
