@@ -25,7 +25,7 @@
 .\" THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 .\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 .\" OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-.Dd February 6, 2017
+.Dd December 31, 2024
 .Dt SYSBUILD.CONF 5
 .Os
 .Sh NAME
@@ -133,6 +133,12 @@ Default:
 .Sq false .
 .It Va MACHINES
 Whitespace-separated list of machine types to build for.
+.Pp
+Every entry in this list can be a simple machine name like
+.Sq amd64
+or it can be a pair of the form
+.Sq evbarm-aarch64
+to indicate the architecture to target for a particular machine type.
 .Pp
 Default: the name of the host machine type.
 .It Va MKVARS
