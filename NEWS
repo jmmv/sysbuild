@@ -1,7 +1,7 @@
 Changes in version 2.8
 ======================
 
-STILL UNDER DEVELOPMENT; NOT RELEASED YET.
+Released on 2025-01-01.
 
 * Made the default.conf configuration file not assume a NetBSD host so
   that it is usable, for example, on Mac OS X.  The previous sample
@@ -20,13 +20,15 @@ STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 * Fixed path to sysbuild in sysbuild4cron.
 
 * Converted test programs to shtk's unittest library, thus removing the
-  dependency on atf-sh and bumping the dependency on shtk to 1.6.
+  dependency on atf-sh.
 
 * Fixed option parsing to detect missing arguments to options.
 
 * Added support to build specific architectures within a machine type.
   This is done via new syntax in the MACHINE variable, which can now
   take pairs like evbarm-aarch64.
+
+* Updated the minimum shtk version to 1.7.
 
 
 Changes in version 2.7
