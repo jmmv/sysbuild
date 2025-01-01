@@ -42,3 +42,8 @@ jobs:
             - run: sudo apt install cvs
             - run: ./.github/workflows/install-shtk.sh /usr/local
             - run: ./.github/workflows/distcheck.sh
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: distfile
+                  path: sysbuild-*.tar.gz
+                  retention-days: 1
