@@ -52,8 +52,14 @@ Default:
 CVS tag to use during checkouts or updates of the src and xsrc modules.
 .Pp
 Default: not defined.
+.It Va FETCH_METHOD
+Method used to fetch sources, either git or cvs. If git then both variables above
+are not used.
+.Pp
+Default:
+.Sq cvs
 .It Va SRCDIR
-Path to the src module.
+Path to the src module or local git repository.
 If you want
 .Xr sysbuild 1
 to perform an update of this directory before every build, you will need
@@ -68,7 +74,7 @@ Whether to perform an update of the source tree before every build or not.
 Default:
 .Sq true .
 .It Va XSRCDIR
-Path to the xsrc module.
+Path to the xsrc module or local git repository.
 If you want
 .Xr sysbuild 1
 to perform an update of this directory before every build, you will need
