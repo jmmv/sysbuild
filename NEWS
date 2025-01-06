@@ -3,7 +3,9 @@ Changes in version 2.9
 
 STILL UNDER DEVELOPMENT; NOT RELEASED YET.
 
-* No changes recorded.
+* Added support to fetch sources from Git in addition to CVS.  The new
+  SCM variable controls which system to use and still defaults to CVS.
+  The new GIT_{BRANCH,REPO}_{SRC,XSRC} variables configure Git access.
 
 
 Changes in version 2.8
