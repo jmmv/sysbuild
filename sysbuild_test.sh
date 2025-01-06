@@ -95,6 +95,49 @@ create_mock_cvsroot() {
 }
 
 
+# Creates a fake Git repository for the src module.
+#
+# \param dir Path to the src repository to create.
+# \param branch Name of the branch to create.
+create_mock_git_src() {
+    local dir="${1}"; shift
+    local branch="${1}"; shift
+
+    assert_command -o ignore -e ignore git init --bare -b "${branch}" "${dir}"
+    git config --global user.email fake@example.com
+    git config --global user.name "Fake User"
+
+    assert_command -o ignore -e ignore git clone "${dir}" tmp
+    create_mock_binary tmp/build.sh
+    echo "first revision" >tmp/file-in-src
+    assert_command -o ignore -e ignore -w tmp git add build.sh file-in-src
+    assert_command -o ignore -e ignore -w tmp git commit -a -m 'Import'
+    assert_command -o ignore -e ignore -w tmp git push
+    rm -rf tmp
+}
+
+
+# Creates a fake Git repository for the xsrc module.
+#
+# \param dir Path to the xsrc repository to create.
+# \param branch Name of the branch to create.
+create_mock_git_xsrc() {
+    local dir="${1}"; shift
+    local branch="${1}"; shift
+
+    assert_command -o ignore -e ignore git init --bare -b "${branch}" "${dir}"
+    git config --global user.email fake@example.com
+    git config --global user.name "Fake User"
+
+    assert_command -o ignore -e ignore git clone "${dir}" tmp
+    echo "first revision" >tmp/file-in-xsrc
+    assert_command -o ignore -e ignore -w tmp git add file-in-xsrc
+    assert_command -o ignore -e ignore -w tmp git commit -a -m 'Import'
+    assert_command -o ignore -e ignore -w tmp git push
+    rm -rf tmp
+}
+
+
 shtk_unittest_add_test build__custom_dirs
 build__custom_dirs_test() {
     mock_cvsroot=":local:$(pwd)/cvsroot"
@@ -734,11 +777,16 @@ BUILD_ROOT = ${HOME}/sysbuild
 BUILD_TARGETS = release
 CVSROOT = :ext:anoncvs@anoncvs.NetBSD.org:/cvsroot
 CVSTAG is undefined
+GIT_SRC_BRANCH = trunk
+GIT_SRC_REPO = https://github.com/NetBSD/src.git
+GIT_XSRC_BRANCH = trunk
+GIT_XSRC_REPO = https://github.com/NetBSD/xsrc.git
 INCREMENTAL_BUILD = false
 MACHINES = $(uname -m)
 MKVARS is undefined
 NJOBS = 123
 RELEASEDIR = ${HOME}/sysbuild/release
+SCM = cvs
 SRCDIR = ${HOME}/sysbuild/src
 UPDATE_SOURCES = true
 XSRCDIR is undefined
@@ -819,11 +867,16 @@ BUILD_ROOT = /tmp/test
 BUILD_TARGETS = release
 CVSROOT = foo bar
 CVSTAG = the-new-tag
+GIT_SRC_BRANCH = trunk
+GIT_SRC_REPO = https://github.com/NetBSD/src.git
+GIT_XSRC_BRANCH = trunk
+GIT_XSRC_REPO = https://github.com/NetBSD/xsrc.git
 INCREMENTAL_BUILD = false
 MACHINES = $(uname -m)
 MKVARS is undefined
 NJOBS = 88
 RELEASEDIR = ${HOME}/sysbuild/release
+SCM = cvs
 SRCDIR is undefined
 UPDATE_SOURCES = true
 XSRCDIR is undefined
@@ -982,8 +1035,8 @@ EOF
 }
 
 
-shtk_unittest_add_test fetch__checkout__src_only
-fetch__checkout__src_only_test() {
+shtk_unittest_add_test fetch__cvs__checkout__src_only
+fetch__cvs__checkout__src_only_test() {
     mock_cvsroot=":local:$(pwd)/cvsroot"
     create_mock_cvsroot "${mock_cvsroot}"
     cat >test.conf <<EOF
@@ -998,8 +1051,8 @@ EOF
 }
 
 
-shtk_unittest_add_test fetch__checkout__src_and_xsrc
-fetch__checkout__src_and_xsrc_test() {
+shtk_unittest_add_test fetch__cvs__checkout__src_and_xsrc
+fetch__cvs__checkout__src_and_xsrc_test() {
     mock_cvsroot=":local:$(pwd)/cvsroot"
     create_mock_cvsroot "${mock_cvsroot}"
     cat >test.conf <<EOF
@@ -1014,8 +1067,8 @@ EOF
 }
 
 
-shtk_unittest_add_test fetch__update__src_only
-fetch__update__src_only_test() {
+shtk_unittest_add_test fetch__cvs__update__src_only
+fetch__cvs__update__src_only_test() {
     mock_cvsroot=":local:$(pwd)/cvsroot"
     create_mock_cvsroot "${mock_cvsroot}"
     cat >test.conf <<EOF
@@ -1048,8 +1101,8 @@ EOF
 }
 
 
-shtk_unittest_add_test fetch__update__src_and_xsrc
-fetch__update__src_and_xsrc_test() {
+shtk_unittest_add_test fetch__cvs__update__src_and_xsrc
+fetch__cvs__update__src_and_xsrc_test() {
     mock_cvsroot=":local:$(pwd)/cvsroot"
     create_mock_cvsroot "${mock_cvsroot}"
     cat >test.conf <<EOF
@@ -1075,6 +1128,114 @@ EOF
     echo "second revision" >file-in-xsrc
     cvs commit -m "Second revision."
     cd -
+
+    test -f checkout/src/file-in-src || fail "src not present yet"
+    if grep "second revision" checkout/src/file-in-src >/dev/null; then
+        fail "second revision already present"
+    fi
+    test -f checkout/xsrc/file-in-xsrc || fail "xsrc not present yet"
+    if grep "second revision" checkout/xsrc/file-in-xsrc >/dev/null; then
+        fail "second revision already present"
+    fi
+
+    assert_command -o ignore -e ignore sysbuild -c test.conf fetch
+
+    grep "second revision" checkout/src/file-in-src >/dev/null \
+        || fail "src not updated"
+    grep "second revision" checkout/xsrc/file-in-xsrc >/dev/null \
+        || fail "xsrc not updated"
+}
+
+
+shtk_unittest_add_test fetch__git__checkout__src_only
+fetch__git__checkout__src_only_test() {
+    create_mock_git_src "$(pwd)/src.git" trunk
+    cat >test.conf <<EOF
+SCM=git
+GIT_SRC_REPO="$(pwd)/src.git"
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR=
+EOF
+
+    assert_command -o ignore -e not-match:"xsrc" sysbuild -c test.conf fetch
+    test -f checkout/src/file-in-src || fail "src not checked out"
+    test ! -d checkout/xsrc || fail "xsrc checked out but not requested"
+}
+
+
+shtk_unittest_add_test fetch__git__checkout__src_and_xsrc
+fetch__git__checkout__src_and_xsrc_test() {
+    create_mock_git_src "$(pwd)/src.git" trunk
+    create_mock_git_xsrc "$(pwd)/xsrc.git" trunk
+    cat >test.conf <<EOF
+SCM=git
+GIT_SRC_REPO="$(pwd)/src.git"
+GIT_XSRC_REPO="$(pwd)/xsrc.git"
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR="$(pwd)/checkout/xsrc"
+EOF
+
+    assert_command -o ignore -e ignore sysbuild -c test.conf fetch
+    test -f checkout/src/file-in-src || fail "src not checked out"
+    test -f checkout/xsrc/file-in-xsrc || fail "xsrc not checked out"
+}
+
+
+shtk_unittest_add_test fetch__git__update__src_only
+fetch__git__update__src_only_test() {
+    create_mock_git_src "$(pwd)/src.git" trunk
+    create_mock_git_xsrc "$(pwd)/xsrc.git" trunk
+    cat >test.conf <<EOF
+SCM=git
+GIT_SRC_REPO="$(pwd)/src.git"
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR=
+EOF
+
+    mkdir checkout
+    assert_command -o ignore -e ignore git clone src.git checkout/src
+
+    assert_command -o ignore -e ignore git clone src.git tmp
+    echo "second revision" >tmp/file-in-src
+    assert_command -o ignore -e ignore -w tmp git commit -a -m 'Second revision'
+    assert_command -o ignore -e ignore -w tmp git push
+    rm -rf tmp
+
+    test -f checkout/src/file-in-src || fail "src not present yet"
+    if grep "second revision" checkout/src/file-in-src >/dev/null; then
+        fail "second revision already present"
+    fi
+
+    assert_command -o ignore -e not-match:"xsrc" sysbuild -c test.conf fetch
+
+    grep "second revision" checkout/src/file-in-src >/dev/null \
+        || fail "src not updated"
+    test ! -d checkout/xsrc || fail "xsrc checked out but not requested"
+}
+
+
+shtk_unittest_add_test fetch__git__update__src_and_xsrc
+fetch__git__update__src_and_xsrc_test() {
+    create_mock_git_src "$(pwd)/src.git" trunk
+    create_mock_git_xsrc "$(pwd)/xsrc.git" trunk
+    cat >test.conf <<EOF
+SCM=git
+GIT_SRC_REPO="$(pwd)/src.git"
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR="$(pwd)/checkout/xsrc"
+EOF
+
+    mkdir checkout
+    assert_command -o ignore -e ignore git clone src.git checkout/src
+    assert_command -o ignore -e ignore git clone xsrc.git checkout/xsrc
+
+    for m in src xsrc; do
+        assert_command -o ignore -e ignore git clone "$m.git" tmp
+        echo "second revision" >"tmp/file-in-$m"
+        assert_command -o ignore -e ignore -w tmp git commit -a -m 'Second revision'
+        assert_command -o ignore -e ignore -w tmp git push
+        rm -rf tmp
+    done
 
     test -f checkout/src/file-in-src || fail "src not present yet"
     if grep "second revision" checkout/src/file-in-src >/dev/null; then

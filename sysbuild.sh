@@ -32,6 +32,7 @@
 shtk_import cli
 shtk_import config
 shtk_import cvs
+shtk_import git
 shtk_import hw
 shtk_import list
 shtk_import process
@@ -40,9 +41,12 @@ shtk_import process
 # List of valid configuration variables.
 #
 # Please remember to update sysbuild.conf(5) if you change this list.
-SYSBUILD_CONFIG_VARS="BUILD_ROOT BUILD_TARGETS CVSROOT CVSTAG INCREMENTAL_BUILD
-                      MACHINES MKVARS NJOBS RELEASEDIR SRCDIR UPDATE_SOURCES
-                      XSRCDIR"
+SYSBUILD_CONFIG_VARS="
+    BUILD_ROOT BUILD_TARGETS CVSROOT CVSTAG
+    GIT_SRC_BRANCH GIT_SRC_REPO GIT_XSRC_BRANCH GIT_XSRC_REPO
+    INCREMENTAL_BUILD MACHINES MKVARS NJOBS RELEASEDIR
+    SCM SRCDIR
+    UPDATE_SOURCES XSRCDIR"
 
 
 # Paths to installed files.
@@ -62,10 +66,15 @@ sysbuild_set_defaults() {
     shtk_config_set BUILD_ROOT "${HOME}/sysbuild"
     shtk_config_set BUILD_TARGETS "release"
     shtk_config_set CVSROOT ":ext:anoncvs@anoncvs.NetBSD.org:/cvsroot"
+    shtk_config_set GIT_SRC_BRANCH "trunk"
+    shtk_config_set GIT_SRC_REPO "https://github.com/NetBSD/src.git"
+    shtk_config_set GIT_XSRC_BRANCH "trunk"
+    shtk_config_set GIT_XSRC_REPO "https://github.com/NetBSD/xsrc.git"
     shtk_config_set INCREMENTAL_BUILD "false"
     shtk_config_set MACHINES "$(uname -m)"
     shtk_config_set NJOBS "$(shtk_hw_ncpus)"
     shtk_config_set RELEASEDIR "${HOME}/sysbuild/release"
+    shtk_config_set SCM "cvs"
     shtk_config_set SRCDIR "${HOME}/sysbuild/src"
     shtk_config_set UPDATE_SOURCES "true"
 
@@ -295,17 +304,40 @@ sysbuild_fetch() {
 
     shtk_config_run_hook pre_fetch_hook
 
-    local cvsroot="$(shtk_config_get CVSROOT)"
+    local scm="$(shtk_config_get SCM)"
+    case "${scm}" in
+        cvs)
+            local cvsroot="$(shtk_config_get CVSROOT)"
 
-    shtk_cli_info "Updating base source tree"
-    shtk_cvs_fetch "${cvsroot}" src "$(shtk_config_get_default CVSTAG '')" \
-        "$(shtk_config_get SRCDIR)"
+            shtk_cli_info "Updating base source tree"
+            shtk_cvs_fetch "${cvsroot}" src "$(shtk_config_get_default CVSTAG '')" \
+                "$(shtk_config_get SRCDIR)"
 
-    if shtk_config_has XSRCDIR; then
-        shtk_cli_info "Updating X11 source tree"
-        shtk_cvs_fetch "${cvsroot}" xsrc \
-            "$(shtk_config_get_default CVSTAG '')" "$(shtk_config_get XSRCDIR)"
-    fi
+            if shtk_config_has XSRCDIR; then
+                shtk_cli_info "Updating X11 source tree"
+                shtk_cvs_fetch "${cvsroot}" xsrc \
+                    "$(shtk_config_get_default CVSTAG '')" "$(shtk_config_get XSRCDIR)"
+            fi
+            ;;
+
+        git)
+            local srcrepo="$(shtk_config_get GIT_SRC_REPO)"
+            local srcbranch="$(shtk_config_get GIT_SRC_BRANCH)"
+            shtk_cli_info "Updating base source tree"
+            shtk_git_fetch "${srcrepo}" "${srcbranch}" "$(shtk_config_get SRCDIR)"
+
+            if shtk_config_has XSRCDIR; then
+                local xsrcrepo="$(shtk_config_get GIT_XSRC_REPO)"
+                local xsrcbranch="$(shtk_config_get GIT_XSRC_BRANCH)"
+                shtk_cli_info "Updating X11 source tree"
+                shtk_git_fetch "${xsrcrepo}" "${xsrcbranch}" "$(shtk_config_get XSRCDIR)"
+            fi
+            ;;
+
+        *)
+            shtk_cli_error "Unknown SCM type ${scm}"
+            ;;
+    esac
 
     shtk_config_run_hook post_fetch_hook
 }
