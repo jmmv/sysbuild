@@ -1147,6 +1147,78 @@ EOF
 }
 
 
+shtk_unittest_add_test fetch__cvs__update__src_is_git
+fetch__cvs__update__src_is_git_test() {
+    mkdir -p checkout/src/.git
+    cat >test.conf <<EOF
+SCM=cvs
+CVSROOT=irrelevant
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR=
+EOF
+
+    cat >experr <<EOF
+sysbuild: E: SCM=cvs but $(pwd)/checkout/src looks like a Git repo
+EOF
+    assert_command -s exit:1 -o empty -e file:experr sysbuild -c test.conf fetch
+}
+
+
+shtk_unittest_add_test fetch__cvs__update__xsrc_is_git
+fetch__cvs__update__xsrc_is_git_test() {
+    mock_cvsroot=":local:$(pwd)/cvsroot"
+    create_mock_cvsroot "${mock_cvsroot}"
+    mkdir -p checkout/xsrc/.git
+    cat >test.conf <<EOF
+SCM=cvs
+CVSROOT="${mock_cvsroot}"
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR="$(pwd)/checkout/xsrc"
+EOF
+
+    assert_command -s exit:1 \
+        -o ignore \
+        -e match:"E: SCM=cvs but $(pwd)/checkout/xsrc looks like a Git repo" \
+        sysbuild -c test.conf fetch
+}
+
+
+shtk_unittest_add_test fetch__git__update__src_is_cvs
+fetch__git__update__src_is_cvs_test() {
+    mkdir -p checkout/src/CVS
+    cat >test.conf <<EOF
+SCM=git
+GIT_SRC_REPO="$(pwd)/src.git"
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR=
+EOF
+
+    cat >experr <<EOF
+sysbuild: E: SCM=git but $(pwd)/checkout/src looks like a CVS checkout
+EOF
+    assert_command -s exit:1 -o empty -e file:experr sysbuild -c test.conf fetch
+}
+
+
+shtk_unittest_add_test fetch__git__update__xsrc_is_cvs
+fetch__git__update__xsrc_is_cvs_test() {
+    create_mock_git_src "$(pwd)/src.git" trunk
+    mkdir -p checkout/xsrc/CVS
+    cat >test.conf <<EOF
+SCM=git
+GIT_SRC_REPO="$(pwd)/src.git"
+GIT_XSRC_REPO=irrelevant
+SRCDIR="$(pwd)/checkout/src"
+XSRCDIR="$(pwd)/checkout/xsrc"
+EOF
+
+    assert_command -s exit:1 \
+        -o ignore \
+        -e match:"E: SCM=git but $(pwd)/checkout/xsrc looks like a CVS checkout" \
+        sysbuild -c test.conf fetch
+}
+
+
 shtk_unittest_add_test fetch__git__checkout__src_only
 fetch__git__checkout__src_only_test() {
     create_mock_git_src "$(pwd)/src.git" trunk
