@@ -309,28 +309,53 @@ sysbuild_fetch() {
         cvs)
             local cvsroot="$(shtk_config_get CVSROOT)"
 
+            local srcdir="$(shtk_config_get SRCDIR)"
+            if [ -d "${srcdir}" -a -e "${srcdir}/.git" ]; then
+                shtk_cli_error "SCM=${scm} but ${srcdir} looks" \
+                    "like a Git repo"
+            fi
+
             shtk_cli_info "Updating base source tree"
             shtk_cvs_fetch "${cvsroot}" src "$(shtk_config_get_default CVSTAG '')" \
-                "$(shtk_config_get SRCDIR)"
+                "${srcdir}"
 
             if shtk_config_has XSRCDIR; then
+                local xsrcdir="$(shtk_config_get XSRCDIR)"
+                if [ -d "${xsrcdir}" -a -e "${xsrcdir}/.git" ]; then
+                    shtk_cli_error "SCM=${scm} but ${xsrcdir} looks" \
+                        "like a Git repo"
+                fi
+
                 shtk_cli_info "Updating X11 source tree"
                 shtk_cvs_fetch "${cvsroot}" xsrc \
-                    "$(shtk_config_get_default CVSTAG '')" "$(shtk_config_get XSRCDIR)"
+                    "$(shtk_config_get_default CVSTAG '')" "${xsrcdir}"
             fi
             ;;
 
         git)
             local srcrepo="$(shtk_config_get GIT_SRC_REPO)"
             local srcbranch="$(shtk_config_get GIT_SRC_BRANCH)"
+
+            local srcdir="$(shtk_config_get SRCDIR)"
+            if [ -d "${srcdir}" -a -e "${srcdir}/CVS" ]; then
+                shtk_cli_error "SCM=${scm} but ${srcdir} looks" \
+                    "like a CVS checkout"
+            fi
+
             shtk_cli_info "Updating base source tree"
-            shtk_git_fetch "${srcrepo}" "${srcbranch}" "$(shtk_config_get SRCDIR)"
+            shtk_git_fetch "${srcrepo}" "${srcbranch}" "${srcdir}"
 
             if shtk_config_has XSRCDIR; then
+                local xsrcdir="$(shtk_config_get XSRCDIR)"
+                if [ -d "${xsrcdir}" -a -e "${xsrcdir}/CVS" ]; then
+                    shtk_cli_error "SCM=${scm} but ${xsrcdir} looks" \
+                        "like a CVS checkout"
+                fi
+
                 local xsrcrepo="$(shtk_config_get GIT_XSRC_REPO)"
                 local xsrcbranch="$(shtk_config_get GIT_XSRC_BRANCH)"
                 shtk_cli_info "Updating X11 source tree"
-                shtk_git_fetch "${xsrcrepo}" "${xsrcbranch}" "$(shtk_config_get XSRCDIR)"
+                shtk_git_fetch "${xsrcrepo}" "${xsrcbranch}" "${xsrcdir}"
             fi
             ;;
 
