@@ -28,7 +28,7 @@
 
 set -eux
 
-readonly VERSION=1.7
+readonly VERSION=HEAD
 
 main() {
     local prefix="${1}"; shift
@@ -39,9 +39,15 @@ main() {
 
     cd "${tmpdir}"
 
-    curl -LO "https://github.com/jmmv/shtk/releases/download/shtk-${VERSION}/shtk-${VERSION}.tar.gz"
-    tar xzvf "shtk-${VERSION}.tar.gz"
-    cd "shtk-${VERSION}"
+    if [ "${VERSION}" = HEAD ]; then
+        git clone https://github.com/jmmv/shtk.git
+        cd shtk
+        autoreconf -is
+    else
+        curl -LO "https://github.com/jmmv/shtk/releases/download/shtk-${VERSION}/shtk-${VERSION}.tar.gz"
+        tar xzvf "shtk-${VERSION}.tar.gz"
+        cd "shtk-${VERSION}"
+    fi
     ./configure --prefix="${prefix}"
     make
     sudo make install
